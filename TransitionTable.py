@@ -1,0 +1,166 @@
+import csv
+
+
+#create the profile from raw profile_dataset
+#the type of the profile of an entity like as {id:[[time1,time2],[title1,titile2]],...} 
+def create_title_profiles():
+	all_profile = {};
+	with open('H:/title_profile_sample.csv', 'r') as titleCsv:
+		titleReader = csv.reader(titleCsv, delimiter='\t')
+		for row in titleReader:
+			if(row[0]=='id'):  continue;
+			time_interval = [];
+			time_interval.append(row[1]);
+			time_interval.append(row[2]);
+			titles = [];
+			for title in row[3].split(','):
+				titles.append(title);
+			profile_entry = [];
+			profile_entry.append(time_interval);
+			profile_entry.append(titles);
+			print row[0];
+			print profile_entry;
+			all_profile[row[0]] = profile_entry;
+	return all_profile;
+
+
+create_title_profiles();
+
+
+#the type of transition table like as {t:[[v,v'],count],...}
+def calcu_transition_probability(before, current, time_interval, atrribute):
+	trainsition_table = create_transition_table();
+	L = 30;
+	transition_probability = 1.0;
+	first_value_interval = [];
+	second_value_interval = [];
+	if time_interval==0:
+
+		return transition_probability;
+
+	else if(time_interval>0 and time_interval<L):
+
+		value_set_interval = trainsition_table[time_interval];
+		first_value_interval, second_value_interval = calcu_firstsecvalue_set(\
+														trainsition_table, time_interval, attribute);
+		int i = 0;
+		int value_up_count = 0;
+		int value_down_count = 0;
+		query_pair = [before, current];
+		for i in len(value_set_interval):
+			if(i%2==0):
+				value_pair = value_set_interval[i];
+
+				#v and v' all in the value set
+				if query_pair == value_pair:
+					value_up_count = value_set_interval[i+1];
+				if before==value_pair[0]:
+					value_down_count += value_set_interval[i+1];
+
+				#v or v' not in the value set
+
+
+		transition_probablity = value_up_count/value_down_count;
+		return transition_probablity;
+		
+	else:
+		time_interval = L-1;
+	
+
+
+
+
+
+
+
+
+
+
+
+#the type of transition table like as {t:[[v,v'],count],...}
+def calcu_firstsecvalue_set(transition_table, time_interval, atrribute):
+	first_value_inteval = [];
+	second_value_interval = [];
+	value_set_iterval = trainsition_table[time_interval];
+	int i = 0;
+	for i in len(value_set_interval):
+		if(i%2==0):
+			first_value_interval.append(value_set_interval[i][0]);
+			second_value_interval.append(value_set_interval[i][1]);
+	return first_value_interval, second_value_interval;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+#create the trainsition table for the profile
+#the type of transition table like as {{t:[[title1, titie2],count]},...}
+def create_transition_table():
+	transition_table = {};
+	table_entries = transition_table.keys();
+	all_profiles = {};
+	all_profiles = create_profiles();
+	for profile in all_profiles:
+		profile_list = profile.items();
+		int tag = 0;
+		for tag in len(profile_list):
+			entry1 = profile_list(tag);
+			if(tag+1>len(profile_list)):
+				return;
+			else:
+				entry2 = profile_list(tag+1);
+			if(entry1[0][0] < entry2[0][0]){
+				time_interval_min = max(1, entry2[0][0]-entry1[0][1]);
+				time_interval_max = entry2[0][1] - entry1[0][0];
+				for time_interval in (time_interval_min:time_interval_max):
+					entry1_values = entry1[1];
+					entry2_vlaues = entry2[1];
+					int entry1_tag = 0;
+					int entry2_tag = 0;
+					for entry1_tag in len(entry1_values):
+						for entry2_tag in len(entry2_values):
+							table_entry = [];
+							table.append(entry1_values[entry1_tag]);
+							table.append(entry2_values[entry2_tag]);
+							if(table_entry not in table_entries):
+								transition_table[table_entry] = 1;
+							else:
+								int start = min(entry1[0][1], entry2[0][1]-time_interval);
+								int end = max(entry1[0][0], entry2[0][0] - time_interval);
+								int diff = start - end;
+								transition_table[table_entry] += diff+1;
+	return transition_table;
+
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
